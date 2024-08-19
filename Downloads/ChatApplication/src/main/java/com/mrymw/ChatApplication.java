@@ -5,6 +5,6 @@ import org.springframework.context.ApplicationContext;
 @SpringBootApplication
 public class ChatApplication {
 	public static void main(String[] args) {
-		ApplicationContext context = SpringApplication.run(ChatApplication.class, args);
+		SpringApplication.run(ChatApplication.class, args);
 	}
 }
