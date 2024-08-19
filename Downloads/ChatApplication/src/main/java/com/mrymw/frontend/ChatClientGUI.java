@@ -1,14 +1,11 @@
 package com.mrymw.frontend;
-
 import com.mrymw.chat.ChatClient;
 import com.mrymw.repository.MessageRepository;
-
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
 public class ChatClientGUI extends JFrame {
     private JTextArea messageArea;
     private JTextField textField;
@@ -37,9 +34,6 @@ public class ChatClientGUI extends JFrame {
 
         String name = JOptionPane.showInputDialog(this, "Enter your name: ", "Name Entry", JOptionPane.PLAIN_MESSAGE);
         this.setTitle("Chat Application - " + name);
-
-
-
 
         textField = new JTextField();
         textField.setFont(textFont);

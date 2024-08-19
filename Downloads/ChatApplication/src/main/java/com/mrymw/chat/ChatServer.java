@@ -1,14 +1,10 @@
 package com.mrymw.chat;
-
-import com.mrymw.entity.Message;
-import com.mrymw.repository.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.net.*;
-import java.time.LocalDateTime;
 import java.util.*;
 @Component
 public class ChatServer {
@@ -18,7 +14,6 @@ public class ChatServer {
     public static void main(String[] args) throws IOException {
         ServerSocket serverSocket = new ServerSocket(2000);
         System.out.println("Server started. Waiting for clients...");
-
         while (true) {
             Socket clientSocket = serverSocket.accept();
             System.out.println("Client connected: " + clientSocket);
