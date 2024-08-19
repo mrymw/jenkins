@@ -13,8 +13,11 @@ import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 public class ChatClientGUI extends JFrame {
     private JTextArea messageArea;
     private JTextField textField;
+    private JTextField recipientField;
+    private JButton privateMessageButton;
     private ChatClient client;
     private JButton exitButton;
+    private boolean isPrivateMessage = false;
     public ChatClientGUI() {
         super("Chat Application");
         setSize(400, 500);
@@ -31,17 +34,33 @@ public class ChatClientGUI extends JFrame {
         messageArea.setFont(textFont);
         JScrollPane scrollPane = new JScrollPane(messageArea);
         add(scrollPane, BorderLayout.CENTER);
+
         String name = JOptionPane.showInputDialog(this, "Enter your name: ", "Name Entry", JOptionPane.PLAIN_MESSAGE);
         this.setTitle("Chat Application - " + name);
+
         textField = new JTextField();
         textField.setFont(textFont);
         textField.setForeground(textColor);
         textField.setBackground(backgroundColor);
         textField.addActionListener(e -> {
             String message = "[" + new SimpleDateFormat("HH:mm:ss").format(new Date()) + "]" + name + ": " + textField.getText();
-            client.sendMessage(message);
+            if(isPrivateMessage) {
+                String recipient = recipientField.getText().trim();
+                if (!recipient.isEmpty()) {
+                    client.sendPrivateMessage(recipient, message);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Please enter a recipient for the private message.", "Error",JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                client.sendMessage(message);
+            }
             textField.setText("");
         });
+
+        recipientField = new JTextField("Recipient Name");
+        recipientField.setFont(textFont);
+        recipientField.setForeground(textColor);
+        recipientField.setBackground(backgroundColor);
 
         exitButton = new JButton("Exit");
         exitButton.setFont(buttonFont);
