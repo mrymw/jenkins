@@ -37,6 +37,7 @@ public class ChatClientGUI extends JFrame {
 
         String name = JOptionPane.showInputDialog(this, "Enter your name: ", "Name Entry", JOptionPane.PLAIN_MESSAGE);
         this.setTitle("Chat Application - " + name);
+        client.sendMessage(name);
 
         textField = new JTextField();
         textField.setFont(textFont);
@@ -100,7 +101,8 @@ public class ChatClientGUI extends JFrame {
         JPanel buttonPanel = new JPanel(new BorderLayout());
         buttonPanel.add(privateMessageButton, BorderLayout.CENTER);
         buttonPanel.add(exitButton, BorderLayout.EAST);
-        buttonPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        bottomPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         add(bottomPanel, BorderLayout.SOUTH);
         recipientField.setEnabled(false);

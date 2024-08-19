@@ -35,8 +35,8 @@ class ClientHandler implements Runnable {
         this.clients = clients;
         this.out = new PrintWriter(clientSocket.getOutputStream(), true);
         this.in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-        out.println("Enter your name: ");
         this.clientName = in.readLine();
+        broadcastMessage(clientName + " has joined the chat.");
     }
     @Override
     public void run() {
@@ -48,6 +48,7 @@ class ClientHandler implements Runnable {
                     if (parts.length==3) {
                         String targetClientName = parts[1];
                         String privateMessage = parts[2];
+                        sendPrivateMessage(targetClientName, privateMessage);
                     } else {
                         out.println("Invalid private message format. Use /msg <username> <message>");
                     }
@@ -63,24 +64,31 @@ class ClientHandler implements Runnable {
                 out.close();
                 clientSocket.close();
                 clients.remove(this);
+                broadcastMessage(clientName + " has left the chat.");
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
     private void sendPrivateMessage(String targetClientName, String privateMessage) {
+        boolean userFound = false;
         for (ClientHandler client : clients) {
             if (client.clientName.equals(targetClientName)) {
                 client.out.println("[Private] " + clientName + ": " + privateMessage);
-                return;
+                userFound = true;
+                break;
             }
         }
-        out.println("User " + targetClientName + " not found.");
+        if (!userFound) {
+            out.println("User " + targetClientName + " not found.");
+        }
     }
     private void broadcastMessage(String message) {
         synchronized (clients) {
             for (ClientHandler client : clients) {
-                client.out.println(message);
+                if(client!= this) {
+                    client.out.println(message);
+                }
             }
         }
     }
