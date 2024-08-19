@@ -22,6 +22,10 @@ public class ChatClient {
     public void sendMessage(String msg) {
         out.println(msg);
     }
+    public void sendPrivateMessage(String clientName, String privateMessage) {
+        String formattedMessage = "/msg " + clientName + " " + privateMessage;
+        sendMessage(formattedMessage);
+    }
     public void startClient() {
         new Thread(() -> {
             try {
