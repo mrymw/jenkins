@@ -62,6 +62,21 @@ public class ChatClientGUI extends JFrame {
         recipientField.setForeground(textColor);
         recipientField.setBackground(backgroundColor);
 
+        privateMessageButton = new JButton("Private Message");
+        privateMessageButton.setFont(buttonFont);
+        privateMessageButton.setBackground(buttonColor);
+        privateMessageButton.setForeground(textColor);
+        privateMessageButton.addActionListener(e -> {
+            isPrivateMessage =!isPrivateMessage;
+            if (isPrivateMessage) {
+                privateMessageButton.setText("Private Message: ON");
+                recipientField.setEnabled(true);
+            } else {
+                privateMessageButton.setText("Private Message: OFF");
+                recipientField.setEnabled(false);
+            }
+        });
+
         exitButton = new JButton("Exit");
         exitButton.setFont(buttonFont);
         exitButton.setBackground(buttonColor);
@@ -76,11 +91,20 @@ public class ChatClientGUI extends JFrame {
             }
             System.exit(0);
         });
+
         JPanel bottomPanel = new JPanel(new BorderLayout());
         bottomPanel.setBackground(backgroundColor);
+        bottomPanel.add(recipientField, BorderLayout.NORTH);
         bottomPanel.add(textField, BorderLayout.CENTER);
-        bottomPanel.add(exitButton, BorderLayout.EAST);
+
+        JPanel buttonPanel = new JPanel(new BorderLayout());
+        buttonPanel.add(privateMessageButton, BorderLayout.CENTER);
+        buttonPanel.add(exitButton, BorderLayout.EAST);
+        buttonPanel.add(buttonPanel, BorderLayout.SOUTH);
+
         add(bottomPanel, BorderLayout.SOUTH);
+        recipientField.setEnabled(false);
+
         try {
             this.client = new ChatClient("127.0.0.1", 2000, this::onMessageReceived);
             client.startClient();
