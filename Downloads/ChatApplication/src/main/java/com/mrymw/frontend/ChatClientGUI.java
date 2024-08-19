@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
+
 public class ChatClientGUI extends JFrame {
     private JTextArea messageArea;
     private JTextField textField;
