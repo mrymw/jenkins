@@ -1,5 +1,6 @@
 package com.mrymw.configuration;
 
+import com.mrymw.handler.JwtHandshakeHandler;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -11,7 +12,10 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/websocket").withSockJS();
+        registry.addEndpoint("/websocket")
+                .setHandshakeHandler(new JwtHandshakeHandler())  // Custom handshake handler
+                .setAllowedOrigins("*")
+                .withSockJS();
 
     }
     @Override
