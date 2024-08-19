@@ -1,4 +1,4 @@
-package com.mrymw.ChatApplication.chat;
+package com.mrymw.chat;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,19 +29,30 @@ class ClientHandler implements Runnable {
     private List<ClientHandler> clients;
     private PrintWriter out;
     private BufferedReader in;
+    private String clientName;
     public ClientHandler (Socket socket, List<ClientHandler> clients) throws IOException {
         this.clientSocket = socket;
         this.clients = clients;
         this.out = new PrintWriter(clientSocket.getOutputStream(), true);
         this.in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        out.println("Enter your name: ");
+        this.clientName = in.readLine();
     }
     @Override
     public void run() {
         try {
             String inputLine;
             while ((inputLine = in.readLine()) != null) {
-                for (ClientHandler aClient : clients) {
-                    aClient.out.println(inputLine);
+                if (inputLine.startsWith("/msg")) {
+                    String[] parts = inputLine.split(" ", 3);
+                    if (parts.length==3) {
+                        String targetClientName = parts[1];
+                        String privateMessage = parts[2];
+                    } else {
+                        out.println("Invalid private message format. Use /msg <username> <message>");
+                    }
+                } else {
+                    broadcastMessage(clientName + ": " + inputLine);
                 }
             }
         } catch (IOException e) {
@@ -51,10 +62,26 @@ class ClientHandler implements Runnable {
                 in.close();
                 out.close();
                 clientSocket.close();
+                clients.remove(this);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-
+    }
+    private void sendPrivateMessage(String targetClientName, String privateMessage) {
+        for (ClientHandler client : clients) {
+            if (client.clientName.equals(targetClientName)) {
+                client.out.println("[Private] " + clientName + ": " + privateMessage);
+                return;
+            }
+        }
+        out.println("User " + targetClientName + " not found.");
+    }
+    private void broadcastMessage(String message) {
+        synchronized (clients) {
+            for (ClientHandler client : clients) {
+                client.out.println(message);
+            }
+        }
     }
 }

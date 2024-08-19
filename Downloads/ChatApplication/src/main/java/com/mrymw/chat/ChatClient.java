@@ -1,4 +1,4 @@
-package com.mrymw.ChatApplication.chat;
+package com.mrymw.chat;
 
 import java.io.BufferedReader;
 import java.io.IOException;
