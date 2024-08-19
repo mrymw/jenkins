@@ -37,7 +37,9 @@ public class ChatClientGUI extends JFrame {
 
         String name = JOptionPane.showInputDialog(this, "Enter your name: ", "Name Entry", JOptionPane.PLAIN_MESSAGE);
         this.setTitle("Chat Application - " + name);
-        client.sendMessage(name);
+
+
+
 
         textField = new JTextField();
         textField.setFont(textFont);
@@ -48,7 +50,6 @@ public class ChatClientGUI extends JFrame {
             if(isPrivateMessage) {
                 String recipient = recipientField.getText().trim();
                 if (!recipient.isEmpty()) {
-                    client.sendPrivateMessage(recipient, message);
                 } else {
                     JOptionPane.showMessageDialog(this, "Please enter a recipient for the private message.", "Error",JOptionPane.ERROR_MESSAGE);
                 }
