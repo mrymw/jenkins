@@ -10,7 +10,7 @@ import java.net.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
-
+@Component
 public class ChatServer {
     private static List<ClientHandler> clients = new ArrayList<>();
 
@@ -37,6 +37,7 @@ class ClientHandler implements Runnable {
     @Autowired
     private MessageRepository messageRepository;
 
+
     public ClientHandler(Socket socket, List<ClientHandler> clients) throws IOException {
         this.clientSocket = socket;
         this.clients = clients;
@@ -51,13 +52,13 @@ class ClientHandler implements Runnable {
                 for (ClientHandler aClient : clients) {
                     aClient.out.println(inputLine);
                 }
-                Message message = new Message();
-                message.setSender("ClientName");
-                message.setRecipient("all");
-                message.setMessage(inputLine);
-                message.setTimestamp(LocalDateTime.now());
-                messageRepository.save(message);
             }
+            Message message = new Message();
+            message.setSender("ClientName");
+            message.setRecipient("all");
+            message.setMessage(inputLine);
+            message.setTimestamp(LocalDateTime.now());
+            messageRepository.save(message);
         } catch (IOException e) {
             System.out.println("An error occurred: " + e.getMessage());
         } finally {
