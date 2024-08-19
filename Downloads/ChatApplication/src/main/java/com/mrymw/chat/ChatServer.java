@@ -3,17 +3,18 @@ package com.mrymw.chat;
 import com.mrymw.entity.Message;
 import com.mrymw.repository.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.net.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 @Component
 public class ChatServer {
+    @Autowired
+    private ApplicationContext context;
     private static List<ClientHandler> clients = new ArrayList<>();
-
     public static void main(String[] args) throws IOException {
         ServerSocket serverSocket = new ServerSocket(2000);
         System.out.println("Server started. Waiting for clients...");
@@ -28,16 +29,12 @@ public class ChatServer {
         }
     }
 }
-@Component
+
 class ClientHandler implements Runnable {
     private Socket clientSocket;
     private List<ClientHandler> clients;
     private PrintWriter out;
     private BufferedReader in;
-    @Autowired
-    private MessageRepository messageRepository;
-
-
     public ClientHandler(Socket socket, List<ClientHandler> clients) throws IOException {
         this.clientSocket = socket;
         this.clients = clients;
@@ -53,12 +50,6 @@ class ClientHandler implements Runnable {
                     aClient.out.println(inputLine);
                 }
             }
-            Message message = new Message();
-            message.setSender("ClientName");
-            message.setRecipient("all");
-            message.setMessage(inputLine);
-            message.setTimestamp(LocalDateTime.now());
-            messageRepository.save(message);
         } catch (IOException e) {
             System.out.println("An error occurred: " + e.getMessage());
         } finally {

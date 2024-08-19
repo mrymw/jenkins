@@ -2,7 +2,6 @@ package com.mrymw.frontend;
 
 import com.mrymw.chat.ChatClient;
 import com.mrymw.repository.MessageRepository;
-import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,8 +9,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
-@Component
 public class ChatClientGUI extends JFrame {
     private JTextArea messageArea;
     private JTextField textField;
@@ -20,8 +17,7 @@ public class ChatClientGUI extends JFrame {
     private ChatClient client;
     private JButton exitButton;
     private boolean isPrivateMessage = false;
-
-    private MessageRepository messageRepository;
+    private static MessageRepository messageRepository;
     public ChatClientGUI() {
         super("Chat Application");
         setSize(400, 500);
