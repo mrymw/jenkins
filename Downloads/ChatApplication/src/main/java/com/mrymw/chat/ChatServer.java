@@ -1,11 +1,14 @@
 package com.mrymw.chat;
 
+import com.mrymw.entity.Message;
 import com.mrymw.repository.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.net.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class ChatServer {
@@ -48,6 +51,12 @@ class ClientHandler implements Runnable {
                 for (ClientHandler aClient : clients) {
                     aClient.out.println(inputLine);
                 }
+                Message message = new Message();
+                message.setSender("ClientName");
+                message.setRecipient("all");
+                message.setMessage(inputLine);
+                message.setTimestamp(LocalDateTime.now());
+                messageRepository.save(message);
             }
         } catch (IOException e) {
             System.out.println("An error occurred: " + e.getMessage());
