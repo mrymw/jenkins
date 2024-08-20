@@ -3,16 +3,16 @@ package com.mrymw.controller;
 import com.mrymw.model.ChatMessage;
 import com.mrymw.service.ChatMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("api/chat")
 public class ChatController {
 
     private final ChatMessageService chatMessageService;
@@ -32,6 +32,10 @@ public class ChatController {
     @PostMapping("/sendMessage")
     public ChatMessage sendMessageHttp(@RequestBody ChatMessage chatMessage) {
         return chatMessageService.saveMessage(chatMessage);
+    }
+    @GetMapping("/messages/{userId}")
+    public ResponseEntity<?> getMessages(@PathVariable Long userId) {
+        return ResponseEntity.ok("Messages for user: " + userId);
     }
 
     // WebSocket Endpoint
