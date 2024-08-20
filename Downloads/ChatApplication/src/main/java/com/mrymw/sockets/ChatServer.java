@@ -6,7 +6,7 @@ import java.util.*;
 
 public class ChatServer {
     private static final int PORT = 2000;
-    private static final List<PrintWriter> clientWriters = new ArrayList<>();
+    private static final List<PrintWriter> clients = new ArrayList<>();
 
     public static void main(String[] args) {
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
@@ -34,15 +34,15 @@ public class ChatServer {
                 in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 out = new PrintWriter(clientSocket.getOutputStream(), true);
 
-                synchronized (clientWriters) {
-                    clientWriters.add(out);
+                synchronized (clients) {
+                    clients.add(out);
                 }
 
                 String message;
                 while ((message = in.readLine()) != null) {
                     System.out.println("Received: " + message);
-                    synchronized (clientWriters) {
-                        for (PrintWriter writer : clientWriters) {
+                    synchronized (clients) {
+                        for (PrintWriter writer : clients) {
                             writer.println(message);
                         }
                     }
@@ -55,8 +55,8 @@ public class ChatServer {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                synchronized (clientWriters) {
-                    clientWriters.remove(out);
+                synchronized (clients) {
+                    clients.remove(out);
                 }
             }
         }

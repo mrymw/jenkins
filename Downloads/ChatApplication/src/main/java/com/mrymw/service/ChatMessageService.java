@@ -7,18 +7,19 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class ChatMessageService {
 
     @Autowired
     private ChatMessageRepository chatMessageRepository;
-
+    //feature: save message
     public ChatMessage saveMessage(ChatMessage chatMessage) {
         return chatMessageRepository.save(chatMessage);
     }
-
-    public void unsendMessage(Long messageId) {
+    //feature: unsent message
+    public void unsentMessage(Long messageId) {
         ChatMessage message = chatMessageRepository.findById(messageId).orElse(null);
         if (message != null && !message.isRead()) {
             LocalDateTime now = LocalDateTime.now();
@@ -30,5 +31,22 @@ public class ChatMessageService {
             }
         }
     }
+    //feature: search message
+    public List<ChatMessage> searchMessages(String keyword) {
+        return chatMessageRepository.findByContentContainingIgnoreCase(keyword);
+    }
+    //feature: edit message
+    public void editMessage(Long messageId, String newContent) {
+        ChatMessage message = chatMessageRepository.findById(messageId).orElse(null);
+        if (message != null && !message.isRead()) {
+            LocalDateTime now = LocalDateTime.now();
+            Duration duration = Duration.between(message.getSendAt(), now);
+            if (duration.toMinutes() <= 10) {
+                message.setContent(newContent);
+                chatMessageRepository.save(message);
+            }
+        }
+    }
+
 
 }
