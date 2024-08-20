@@ -7,5 +7,7 @@ import java.util.List;
 
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
     List<ChatMessage> findByContentContainingIgnoreCase(String keyword);
+    long countByReceiverIdAndIsRead(String receiver, boolean isRead);
+
 
 }

@@ -47,6 +47,10 @@ public class ChatMessageService {
             }
         }
     }
+    //feature: count unread messages
+    public long countUnreadMessages(String receiver) {
+        return chatMessageRepository.countByReceiverIdAndIsRead(receiver, false);
+    }
 
 
 }
