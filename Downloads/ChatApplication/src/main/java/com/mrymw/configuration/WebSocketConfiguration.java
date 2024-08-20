@@ -1,6 +1,8 @@
 package com.mrymw.configuration;
 
+import com.mrymw.controller.ChatController;
 import com.mrymw.handler.JwtHandshakeHandler;
+import com.mrymw.model.ChatMessage;
 import com.mrymw.security.JWTUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -8,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.messaging.simp.stomp.StompCommand;
@@ -51,12 +54,17 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(new ChannelInterceptor() {
+
+            @Autowired
+            private ChatController chatController;
+
             @Override
             public Message<?> preSend(Message<?> message, MessageChannel channel) {
                 StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
                 log.info("Headers: {}", accessor);
 
                 assert accessor != null;
+
                 if (StompCommand.CONNECT.equals(accessor.getCommand())) {
                     String authorizationHeader = accessor.getFirstNativeHeader("Authorization");
                     if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
@@ -76,6 +84,18 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
                     }
                 }
 
+                // Handle SEND command to directly call controller methods
+                if (StompCommand.SEND.equals(accessor.getCommand())) {
+                    String destination = accessor.getDestination();
+                    ChatMessage chatMessage = (ChatMessage) message.getPayload();
+
+                    if ("/app/sendMessage".equals(destination)) {
+                        chatController.sendMessage(chatMessage);
+                    } else if ("/app/addUser".equals(destination)) {
+                        SimpMessageHeaderAccessor simpHeaderAccessor = (SimpMessageHeaderAccessor) accessor;
+                        chatController.addUser(chatMessage, simpHeaderAccessor);
+                    }
+                }
                 return message;
             }
         });

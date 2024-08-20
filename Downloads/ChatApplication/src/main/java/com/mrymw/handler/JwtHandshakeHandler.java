@@ -38,7 +38,6 @@ public class JwtHandshakeHandler extends AbstractHandshakeHandler {
     }
 
     private UserDetails loadUserByUsername(String username) {
-        // Implement this method to retrieve user details from your user service or repository
         return null;
     }
 }
