@@ -89,9 +89,9 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
                     String destination = accessor.getDestination();
                     ChatMessage chatMessage = (ChatMessage) message.getPayload();
 
-                    if ("/app/sendMessage".equals(destination)) {
+                    if ("/sendMessage".equals(destination)) {
                         chatController.sendMessage(chatMessage);
-                    } else if ("/app/addUser".equals(destination)) {
+                    } else if ("/addUser".equals(destination)) {
                         SimpMessageHeaderAccessor simpHeaderAccessor = (SimpMessageHeaderAccessor) accessor;
                         chatController.addUser(chatMessage, simpHeaderAccessor);
                     }
