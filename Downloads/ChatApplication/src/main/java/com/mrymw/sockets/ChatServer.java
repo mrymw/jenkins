@@ -5,7 +5,7 @@ import java.net.*;
 import java.util.*;
 
 public class ChatServer {
-    private static final int PORT = 90911;
+    private static final int PORT = 2000;
     private static final List<PrintWriter> clientWriters = new ArrayList<>();
 
     public static void main(String[] args) {
