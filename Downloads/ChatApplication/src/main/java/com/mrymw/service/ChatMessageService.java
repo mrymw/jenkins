@@ -14,11 +14,11 @@ public class ChatMessageService {
 
     @Autowired
     private ChatMessageRepository chatMessageRepository;
-    //feature: save message
+
     public ChatMessage saveMessage(ChatMessage chatMessage) {
         return chatMessageRepository.save(chatMessage);
     }
-    //feature: unsent message
+
     public void unsentMessage(Long messageId) {
         ChatMessage message = chatMessageRepository.findById(messageId).orElse(null);
         if (message != null && !message.isRead()) {
@@ -31,11 +31,11 @@ public class ChatMessageService {
             }
         }
     }
-    //feature: search message
+
     public List<ChatMessage> searchMessages(String keyword) {
         return chatMessageRepository.findByContentContainingIgnoreCase(keyword);
     }
-    //feature: edit message
+
     public void editMessage(Long messageId, String newContent) {
         ChatMessage message = chatMessageRepository.findById(messageId).orElse(null);
         if (message != null && !message.isRead()) {
@@ -47,10 +47,8 @@ public class ChatMessageService {
             }
         }
     }
-    //feature: count unread messages
-    public long countUnreadMessages(String receiver) {
-        return chatMessageRepository.countByReceiverIdAndIsRead(receiver, false);
+
+    public long countUnreadMessages(String recipientName) {
+        return chatMessageRepository.countByRecipientNameAndIsRead(recipientName, false);
     }
-
-
 }

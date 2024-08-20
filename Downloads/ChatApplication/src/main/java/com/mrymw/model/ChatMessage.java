@@ -1,10 +1,7 @@
 package com.mrymw.model;
-
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Getter
 @Setter
@@ -21,9 +18,9 @@ public class ChatMessage {
     private Long id;
 
     @Column
-    private String sender;
+    private String senderName;
     @Column
-    private String recipient;
+    private String recipientName;
 
     @Column
     private boolean isEdited;
