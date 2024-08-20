@@ -23,13 +23,6 @@ public class ChatController {
         this.chatMessageService = chatMessageService;
     }
 
-    // WebSocket Endpoint for sending messages
-    @MessageMapping("/sendMessage")
-    @SendTo("/topic/public")
-    public ChatMessage sendMessage(@Payload ChatMessage chatMessage) {
-        return chatMessageService.saveMessage(chatMessage);
-    }
-
     // REST Endpoint for sending messages
     @PostMapping("/sendMessage")
     public ChatMessage sendMessageHttp(@RequestBody ChatMessage chatMessage) {
@@ -70,13 +63,5 @@ public class ChatController {
     public ResponseEntity<Long> getUnreadMessageCount(@PathVariable String receiver) {
         long unreadCount = chatMessageService.countUnreadMessages(receiver);
         return ResponseEntity.ok(unreadCount);
-    }
-
-    // WebSocket Endpoint for adding users
-    @MessageMapping("/addUser")
-    @SendTo("/topic/public")
-    public ChatMessage addUser(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor) {
-        headerAccessor.getSessionAttributes().put("username", chatMessage.getSenderName());
-        return chatMessageService.saveMessage(chatMessage);
     }
 }
