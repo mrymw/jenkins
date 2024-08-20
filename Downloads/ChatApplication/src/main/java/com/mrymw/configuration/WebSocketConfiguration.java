@@ -1,6 +1,7 @@
 package com.mrymw.configuration;
 
 import com.mrymw.controller.ChatController;
+import com.mrymw.handler.JwtHandshakeHandler;
 import com.mrymw.model.ChatMessage;
 import com.mrymw.security.JWTUtils;
 import org.apache.logging.log4j.LogManager;
@@ -31,17 +32,16 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
     private static final Logger log = LogManager.getLogger(WebSocketConfiguration.class);
     private JWTUtils jwtTokenUtil;
     private UserDetailsService userDetailsService;
+
     @Autowired
     public WebSocketConfiguration(JWTUtils jwtTokenUtil, UserDetailsService userDetailsService) {
         this.jwtTokenUtil = jwtTokenUtil;
         this.userDetailsService = userDetailsService;
     }
 
-
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        //registry.addEndpoint("/ws").withSockJS();
-        registry.addEndpoint("/ws");
+        registry.addEndpoint("/ws").setHandshakeHandler(new JwtHandshakeHandler(jwtTokenUtil)).withSockJS();
     }
 
     @Override
@@ -61,8 +61,6 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
             public Message<?> preSend(Message<?> message, MessageChannel channel) {
                 StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
                 log.info("Headers: {}", accessor);
-
-                assert accessor != null;
 
                 if (StompCommand.CONNECT.equals(accessor.getCommand())) {
                     String authorizationHeader = accessor.getFirstNativeHeader("Authorization");

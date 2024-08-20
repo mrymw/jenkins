@@ -11,8 +11,6 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
-
-import java.awt.*;
 import java.util.Objects;
 
 
@@ -22,6 +20,7 @@ import java.util.Objects;
 @Slf4j
 public class WebSocketEventListener {
     private final SimpMessageSendingOperations messageTemplate;
+
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
@@ -33,9 +32,6 @@ public class WebSocketEventListener {
                     .sender(username)
                     .build();
             messageTemplate.convertAndSend("/topic/public", chatMessage);
-
         }
-
     }
-
 }
