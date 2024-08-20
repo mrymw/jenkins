@@ -27,9 +27,14 @@ public class Client {
             bufferedWriter.flush();
             Scanner scanner = new Scanner(System.in);
             System.out.println("You can start typing your messages...");
+            System.out.println("To send private messages follow this format @<name>:<message>");
             while (socket.isConnected()){
                 String messageToSend = scanner.nextLine();
-                bufferedWriter.write(username + ": " + messageToSend);
+                if (messageToSend.startsWith("@")) {
+                    bufferedWriter.write(messageToSend);
+                } else {
+                    bufferedWriter.write(username + ": " + messageToSend);
+                }
                 bufferedWriter.newLine();
                 bufferedWriter.flush();
                 System.out.println("Message sent: " + messageToSend);

@@ -30,11 +30,42 @@ public class ClientHandler implements Runnable {
         while (socket.isConnected()) {
             try {
                 messageFromClient = bufferedReader.readLine();
-                System.out.println("Received message from " + clientUsername + ": " + messageFromClient);
-                broadcastMessage(messageFromClient);
+                if (messageFromClient.startsWith("@")) {
+                    sendPrivateMessage(messageFromClient);
+                } else {
+                    broadcastMessage(messageFromClient);
+                }
             } catch (IOException e) {
                 closeEverything(socket, bufferedReader, bufferedWriter);
                 break;
+            }
+        }
+    }
+    public void sendPrivateMessage(String message) {
+        String[] splitMessage = message.split(":", 2);
+        if (splitMessage.length<2) return;
+        String recipient = splitMessage[0].substring(1);
+        String privateMessage = splitMessage[1].trim();
+        boolean recipientFound = false;
+        for (ClientHandler clientHandler : clientHandlers) {
+            if (clientHandler.clientUsername.equals(recipient)) {
+                try {
+                    clientHandler.bufferedWriter.write("Private from " + clientUsername + ": " + privateMessage);
+                    clientHandler.bufferedWriter.newLine();
+                    clientHandler.bufferedWriter.flush();
+                    recipientFound = true;
+                } catch (IOException e) {
+                    closeEverything(socket, bufferedReader, bufferedWriter);
+                }
+            }
+        }
+        if (!recipientFound) {
+            try {
+                bufferedWriter.write("Server: User " + recipient + " not found.");
+                bufferedWriter.newLine();
+                bufferedWriter.flush();
+            } catch (IOException e) {
+                closeEverything(socket, bufferedReader, bufferedWriter);
             }
         }
     }
