@@ -57,17 +57,7 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
         registry.setApplicationDestinationPrefixes("/app");
 
     }
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000")); // Replace with your allowed origins
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setAllowCredentials(true);
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
+
 
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
