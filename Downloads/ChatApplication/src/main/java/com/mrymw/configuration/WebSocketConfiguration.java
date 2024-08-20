@@ -1,7 +1,6 @@
 package com.mrymw.configuration;
 
 import com.mrymw.controller.ChatController;
-import com.mrymw.handler.JwtHandshakeHandler;
 import com.mrymw.model.ChatMessage;
 import com.mrymw.security.JWTUtils;
 import org.apache.logging.log4j.LogManager;
@@ -41,13 +40,14 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws").withSockJS();
-        registry.addEndpoint("/ws");
+        registry.addEndpoint("/ws").setAllowedOrigins("*").withSockJS(); // Use only one endpoint setup
+        /*registry.addEndpoint("/ws").withSockJS();
+        registry.addEndpoint("/ws");*/
     }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/topic");
+        registry.enableSimpleBroker("/topic", "/queue");
         registry.setApplicationDestinationPrefixes("/app");
     }
 
@@ -89,9 +89,9 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
                     String destination = accessor.getDestination();
                     ChatMessage chatMessage = (ChatMessage) message.getPayload();
 
-                    if ("/sendMessage".equals(destination)) {
+                    if ("/app/sendMessage".equals(destination)) {
                         chatController.sendMessage(chatMessage);
-                    } else if ("/addUser".equals(destination)) {
+                    } else if ("/app/addUser".equals(destination)) {
                         SimpMessageHeaderAccessor simpHeaderAccessor = (SimpMessageHeaderAccessor) accessor;
                         chatController.addUser(chatMessage, simpHeaderAccessor);
                     }
