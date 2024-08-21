@@ -1,6 +1,7 @@
 package com.mrymw.configuration;
 
 import com.mrymw.controller.ChatController;
+import com.mrymw.controller.WebSocketController;
 import com.mrymw.model.ChatMessage;
 import com.mrymw.security.JWTUtils;
 import com.mrymw.security.MyUserDetailsService;
@@ -26,6 +27,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
@@ -37,6 +40,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private JWTUtils jwtUtils;
 
     @Autowired
+    private WebSocketController webSocketController;
+
+    @Autowired
     private MyUserDetailsService myUserDetailsService;
 
     private static final Logger log = LogManager.getLogger(GraphQlWebFluxAutoConfiguration.WebSocketConfiguration.class);
@@ -46,12 +52,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.addEndpoint("/ws").withSockJS();
         registry.addEndpoint("/ws");
     }
-    @Override
+    /*@Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(new ChannelInterceptor() {
-
-            @Autowired
-            private ChatController chatController;
 
             @Override
             public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -75,23 +78,29 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                         accessor.setUser(authentication);
                     } catch (Exception e) {
                         log.error("JWT authentication failed: {}", e.getMessage());
-                        throw e; // Or handle the exception as needed
+                        throw e;
                     }
                 }
-                if (StompCommand.SEND.equals(accessor.getCommand())) {
-                    String destination = accessor.getDestination();
-                    ChatMessage chatMessage = (ChatMessage) message.getPayload();
-                    if ("/app/sendMessage".equals(destination)) {
-                        chatController.sendMessage(chatMessage);
-                    }
-                }
+
+                // DO NOT manually invoke sendMessage here
+                // if (StompCommand.SEND.equals(accessor.getCommand())) {
+                //     String destination = accessor.getDestination();
+                //     if ("/app/sendMessage".equals(destination)) {
+                //         ChatMessage chatMessage = (ChatMessage) message.getPayload();
+                //         webSocketController.sendMessage(chatMessage);
+                //     }
+                // }
+
                 return message;
             }
         });
-    }
+    }*/
+
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/topic");
         config.setApplicationDestinationPrefixes("/app");
     }
 }
+
+

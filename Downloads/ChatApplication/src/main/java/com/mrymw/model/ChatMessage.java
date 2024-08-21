@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Builder
 @Table(name = "chat_message")
 public class ChatMessage {
 
@@ -16,13 +17,15 @@ public class ChatMessage {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-generates ID
     private Long id;
 
-    @Column(nullable = false)
+    @Column
     private String sender;
-    @Column(nullable = false)
+    @Column
     private String receiver;
+    @Column
+    private MessageType type;
 
-    @Column(nullable = false)
-    private boolean isEdited;
+    /*@Column(nullable = false)
+    private boolean isEdited;*/
 
     /*@Column
     private boolean isRead;*/;

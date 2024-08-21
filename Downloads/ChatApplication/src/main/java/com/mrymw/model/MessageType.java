@@ -1,5 +1,4 @@
 package com.mrymw.model;
-
-public enum MessageType{
-    LEAVE, CHAT, JOIN
+public enum MessageType {
+    CHAT, JOIN, LEAVE
 }

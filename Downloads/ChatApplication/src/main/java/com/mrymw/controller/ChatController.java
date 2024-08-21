@@ -29,15 +29,6 @@ public class ChatController {
     public ChatMessage sendMessageHttp(@RequestBody ChatMessage chatMessage) {
         return chatMessageService.saveMessage(chatMessage);
     }
-
-    @MessageMapping("/chat")
-    @SendTo("/topic/messages")
-    public ChatMessage sendMessage(ChatMessage message) {
-        // Save the chat message to the database
-        chatMessageService.saveMessage(message);
-        return message; // This will be broadcast to all subscribers
-    }
-
     // REST Endpoint to unsend a message
     /*@DeleteMapping("/messages/{messageId}")
     public ResponseEntity<String> unsendMessage(@PathVariable Long messageId) {

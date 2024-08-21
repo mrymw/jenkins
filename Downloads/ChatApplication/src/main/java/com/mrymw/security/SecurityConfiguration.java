@@ -33,7 +33,7 @@ public class SecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .requestMatchers(
-                        "/auth/users", "/auth/users/login", "/auth/users/register")
+                        "/auth/users", "/auth/users/login", "/auth/users/register", "*", "/css/**", "/js/**", "/ws/**")
                 .permitAll()
                 .anyRequest()
                 .authenticated();
