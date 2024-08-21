@@ -34,7 +34,7 @@ function connect(event) {
 
 
 
-async function onConnected() {
+/*async function onConnected() {
     // Subscribe to the Public Topic
     await stompClient.subscribe('/topic/public', onMessageReceived);
 
@@ -45,7 +45,16 @@ async function onConnected() {
     )
 
     connectingElement.classList.add('hidden');
+}*/
+
+async function onConnected() {
+    await stompClient.subscribe('/topic/public', onMessageReceived);
+    await stompClient.subscribe('/user/queue/messages', onMessageReceived); // Ensure this is correct
+    stompClient.send("/app/add", {}, JSON.stringify({sender: username, type: 'JOIN'}));
+    connectingElement.classList.add('hidden');
 }
+
+
 
 
 function onError(error) {
@@ -54,7 +63,7 @@ function onError(error) {
 }
 
 
-function sendMessage(event) {
+/*function sendMessage(event) {
     event.preventDefault();
     var messageContent = messageInput.value.trim();
     if(messageContent && stompClient) {
@@ -67,9 +76,63 @@ function sendMessage(event) {
         messageInput.value = '';
     }
 
+}*/
+function sendMessage(event) {
+    event.preventDefault();
+    var messageContent = messageInput.value.trim();
+    var recipient = document.querySelector('#recipient').value.trim(); // Retrieve recipient from input field
+
+    if (messageContent && stompClient) {
+        var chatMessage = {
+            sender: username,
+            content: messageContent,
+            type: 'CHAT',
+            receiver: recipient || null // Set recipient if provided
+        };
+        stompClient.send("/app/send", {}, JSON.stringify(chatMessage));
+        messageInput.value = '';
+        document.querySelector('#recipient').value = ''; // Clear recipient field
+    }
 }
 
 
+
+/*function onMessageReceived(payload) {
+    var message = JSON.parse(payload.body);
+
+    var messageElement = document.createElement('li');
+
+    if(message.type === 'JOIN') {
+        messageElement.classList.add('event-message');
+        message.content = message.sender + ' joined!';
+    } else if (message.type === 'LEAVE') {
+        messageElement.classList.add('event-message');
+        message.content = message.sender + ' left!';
+    } else {
+        messageElement.classList.add('chat-message');
+
+        var avatarElement = document.createElement('i');
+        var avatarText = document.createTextNode(message.sender[0]);
+        avatarElement.appendChild(avatarText);
+        avatarElement.style['background-color'] = getAvatarColor(message.sender);
+
+        messageElement.appendChild(avatarElement);
+
+        var usernameElement = document.createElement('span');
+        var usernameText = document.createTextNode(message.sender);
+        usernameElement.appendChild(usernameText);
+        messageElement.appendChild(usernameElement);
+    }
+
+    var textElement = document.createElement('p');
+    var messageText = document.createTextNode(message.content);
+    textElement.appendChild(messageText);
+
+    messageElement.appendChild(textElement);
+
+    messageArea.appendChild(messageElement);
+    messageArea.scrollTop = messageArea.scrollHeight;
+}*/
 function onMessageReceived(payload) {
     var message = JSON.parse(payload.body);
 

@@ -15,16 +15,23 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 @Controller
 public class WebSocketController {
 
+
+    private final SimpMessagingTemplate messagingTemplate;
     private final ChatMessageService chatMessageService;
 
     @Autowired
-    public WebSocketController(ChatMessageService chatMessageService) {
+    public WebSocketController(SimpMessagingTemplate messagingTemplate, ChatMessageService chatMessageService) {
         this.chatMessageService = chatMessageService;
+        this.messagingTemplate = messagingTemplate;
     }
 
     @MessageMapping("/send")
-    @SendTo("/topic/public")
     public ChatMessage sendMessage(@Payload ChatMessage message) {
+        if(message.getReceiver() == null || message.getReceiver().isEmpty()) {
+            messagingTemplate.convertAndSend("/topic/public", message);
+        } else {
+            messagingTemplate.convertAndSendToUser(message.getReceiver(), "/queue/messages", message);
+        }
         chatMessageService.saveMessage(message);
         return message;
     }
