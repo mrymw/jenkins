@@ -1,9 +1,13 @@
 package com.mrymw.sockets;
 
+import com.mrymw.model.ChatMessage;
+import com.mrymw.repository.ChatMessageRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
-
 public class ClientHandler implements Runnable {
 
     public static ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
@@ -12,7 +16,11 @@ public class ClientHandler implements Runnable {
     private BufferedWriter bufferedWriter;
     private String clientUsername;
 
-    public ClientHandler(Socket socket) {
+    @Autowired
+    private ChatMessageRepository chatMessageRepository;
+
+    public ClientHandler(Socket socket, ChatMessageRepository chatMessageRepository) {
+        this.chatMessageRepository = chatMessageRepository;
         try {
             this.socket = socket;
             this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
@@ -35,33 +43,41 @@ public class ClientHandler implements Runnable {
                 } else {
                     broadcastMessage(messageFromClient);
                 }
+                saveMessageToDatabase(clientUsername, null, messageFromClient);
             } catch (IOException e) {
                 closeEverything(socket, bufferedReader, bufferedWriter);
                 break;
             }
         }
     }
+    public void saveMessageToDatabase(String sender, String receiver, String message) {
+        ChatMessage chatMessage = new ChatMessage();
+        chatMessage.setSender(sender);
+        chatMessage.setReceiver(receiver);
+        chatMessage.setContent(message);
+        chatMessageRepository.save(chatMessage);
+    }
     public void sendPrivateMessage(String message) {
         String[] splitMessage = message.split(":", 2);
         if (splitMessage.length<2) return;
-        String recipient = splitMessage[0].substring(1);
+        String receiver = splitMessage[0].substring(1);
         String privateMessage = splitMessage[1].trim();
-        boolean recipientFound = false;
+        boolean receiverFound = false;
         for (ClientHandler clientHandler : clientHandlers) {
-            if (clientHandler.clientUsername.equals(recipient)) {
+            if (clientHandler.clientUsername.equals(receiver)) {
                 try {
                     clientHandler.bufferedWriter.write("Private from " + clientUsername + ": " + privateMessage);
                     clientHandler.bufferedWriter.newLine();
                     clientHandler.bufferedWriter.flush();
-                    recipientFound = true;
+                    receiverFound = true;
                 } catch (IOException e) {
                     closeEverything(socket, bufferedReader, bufferedWriter);
                 }
             }
         }
-        if (!recipientFound) {
+        if (!receiverFound) {
             try {
-                bufferedWriter.write("Server: User " + recipient + " not found.");
+                bufferedWriter.write("Server: User " + receiver + " not found.");
                 bufferedWriter.newLine();
                 bufferedWriter.flush();
             } catch (IOException e) {

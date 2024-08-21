@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -46,10 +47,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             String jwt = parseJwt(request);
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
                 String username = jwtUtils.getUsernameFromToken(jwt);
-                UserDetails userDetails = myUserDetailsService.loadUserByUsername(username);
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken
-                        (userDetails, null, userDetails.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                Authentication authentication = getAuthentication(username);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (ExpiredJwtException e) {
             logger.error("JWT Token is expired: {}", e.getMessage());
@@ -64,5 +63,13 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         }
         filterChain.doFilter(request, response);
     }
+
+    public Authentication getAuthentication(String username) {
+        UserDetails userDetails = myUserDetailsService.loadUserByUsername(username);
+        return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+    }
+
+
+
 
 }

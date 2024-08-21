@@ -5,8 +5,6 @@ import com.mrymw.repository.ChatMessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -18,8 +16,14 @@ public class ChatMessageService {
     public ChatMessage saveMessage(ChatMessage chatMessage) {
         return chatMessageRepository.save(chatMessage);
     }
+    public List<ChatMessage> getMessagesBySender(String sender) {
+        return chatMessageRepository.findBySender(sender);
+    }
+    public List<ChatMessage> getMessagesByReceiver(String receiver) {
+        return chatMessageRepository.findByReceiver(receiver);
+    }
 
-    public void unsentMessage(Long messageId) {
+    /*public void unsentMessage(Long messageId) {
         ChatMessage message = chatMessageRepository.findById(messageId).orElse(null);
         if (message != null && !message.isRead()) {
             LocalDateTime now = LocalDateTime.now();
@@ -30,13 +34,13 @@ public class ChatMessageService {
                 throw new RuntimeException("Message cannot be unsent after 10 minutes.");
             }
         }
-    }
+    }*/
 
-    public List<ChatMessage> searchMessages(String keyword) {
+   /* public List<ChatMessage> searchMessages(String keyword) {
         return chatMessageRepository.findByContentContainingIgnoreCase(keyword);
-    }
+    }*/
 
-    public void editMessage(Long messageId, String newContent) {
+    /*public void editMessage(Long messageId, String newContent) {
         ChatMessage message = chatMessageRepository.findById(messageId).orElse(null);
         if (message != null && !message.isRead()) {
             LocalDateTime now = LocalDateTime.now();
@@ -46,9 +50,12 @@ public class ChatMessageService {
                 chatMessageRepository.save(message);
             }
         }
+    }*/
+    public List<ChatMessage> getChatHistory(String username) {
+        return chatMessageRepository.findBySenderOrReceiver(username, username);
     }
 
-    public long countUnreadMessages(String recipientName) {
-        return chatMessageRepository.countByRecipientNameAndIsRead(recipientName, false);
-    }
+    /*public long countUnreadMessages(String receiverName) {
+        return chatMessageRepository.countByReceiverNameAndIsRead(receiverName, false);
+    }*/
 }

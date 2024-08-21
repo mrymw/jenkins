@@ -8,6 +8,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,8 +30,16 @@ public class ChatController {
         return chatMessageService.saveMessage(chatMessage);
     }
 
+    @MessageMapping("/chat")
+    @SendTo("/topic/messages")
+    public ChatMessage sendMessage(ChatMessage message) {
+        // Save the chat message to the database
+        chatMessageService.saveMessage(message);
+        return message; // This will be broadcast to all subscribers
+    }
+
     // REST Endpoint to unsend a message
-    @DeleteMapping("/messages/{messageId}")
+    /*@DeleteMapping("/messages/{messageId}")
     public ResponseEntity<String> unsendMessage(@PathVariable Long messageId) {
         try {
             chatMessageService.unsentMessage(messageId);
@@ -38,17 +47,17 @@ public class ChatController {
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
-    }
+    }*/
 
     // REST Endpoint to search messages
-    @GetMapping("/search")
+    /*@GetMapping("/search")
     public ResponseEntity<List<ChatMessage>> searchMessages(@RequestParam String keyword) {
         List<ChatMessage> messages = chatMessageService.searchMessages(keyword);
         return ResponseEntity.ok(messages);
-    }
+    }*/
 
     // REST Endpoint to edit a message
-    @PutMapping("/messages/{messageId}")
+    /*@PutMapping("/messages/{messageId}")
     public ResponseEntity<String> editMessage(@PathVariable Long messageId, @RequestBody String newContent) {
         try {
             chatMessageService.editMessage(messageId, newContent);
@@ -56,12 +65,12 @@ public class ChatController {
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
-    }
+    }*/
 
     // REST Endpoint to get unread message count
-    @GetMapping("/unreadCount/{receiver}")
+    /*@GetMapping("/unreadCount/{receiver}")
     public ResponseEntity<Long> getUnreadMessageCount(@PathVariable String receiver) {
         long unreadCount = chatMessageService.countUnreadMessages(receiver);
         return ResponseEntity.ok(unreadCount);
-    }
+    }*/
 }
